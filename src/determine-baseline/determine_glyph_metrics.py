@@ -25,15 +25,14 @@ def calculate_edges_and_width(black_pixels):
 
 def calculate_baseline(image_array, top_edge):
     top_row_black_pixels = np.where(image_array[top_edge, :] == 0)[0]
-    top_edge_start = top_row_black_pixels.min() + 1
-    top_edge_end = top_row_black_pixels.max() + 1
-    top_edge_width = top_row_black_pixels.size
-    return top_edge_start, top_edge_end, top_edge_width
+    baseline_start = top_row_black_pixels.min() + 1
+    baseline_end = top_row_black_pixels.max() + 1
+    return baseline_start, baseline_end, 
 
 
-def calculate_side_bearings(left_edge, right_edge, top_edge_start, top_edge_end):
-    lsb = top_edge_start - left_edge
-    rsb = right_edge - top_edge_end
+def calculate_side_bearings(left_edge, right_edge, baseline_start, baseline_end):
+    lsb = baseline_start - left_edge
+    rsb = right_edge - baseline_end
     return lsb, rsb
 
 
@@ -47,8 +46,8 @@ def get_glyph_metrics(image):
         return None
 
     top_edge, left_edge, right_edge, glyph_width = calculate_edges_and_width(black_pixels)
-    top_edge_start, top_edge_end, top_edge_width = calculate_baseline(image_array, top_edge)
-    lsb, rsb = calculate_side_bearings(left_edge, right_edge, top_edge_start, top_edge_end)
+    baseline_start, baseline_end = calculate_baseline(image_array, top_edge)
+    lsb, rsb = calculate_side_bearings(left_edge, right_edge, baseline_start, baseline_end)
 
     return {
         'top_edge': top_edge,
@@ -57,8 +56,8 @@ def get_glyph_metrics(image):
         'glyph_width': glyph_width,
         'lsb': lsb,
         'rsb': rsb,
-        'top_edge_start': top_edge_start,
-        'top_edge_end': top_edge_end
+        'baseline_start': baseline_start,
+        'baseline_end': baseline_end
     }
 
 
@@ -76,8 +75,8 @@ def visualize_glyph_metrics(image, metrics, output_path):
     ax.axvline(x=metrics['right_edge'], color='green', linestyle='--', label='right edge')
 
     # baseline start and end
-    ax.axvline(x=metrics['top_edge_start'], color='orange', linestyle='--', label='baseline starts')
-    ax.axvline(x=metrics['top_edge_end'], color='purple', linestyle='--', label='baseline ends')
+    ax.axvline(x=metrics['baseline_start'], color='orange', linestyle='--', label='baseline starts')
+    ax.axvline(x=metrics['baseline_end'], color='purple', linestyle='--', label='baseline ends')
 
     ax.legend()
     plt.title(f"metric visualization: {os.path.basename(output_path)}")
