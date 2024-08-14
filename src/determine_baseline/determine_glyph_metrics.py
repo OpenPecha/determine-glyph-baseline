@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 
 
 def convert_to_binary_image(image):
-    if image.mode != '1':
-        return image.convert('1')
-    return image
+    return image.convert('1') if image.mode != '1' else image
 
 
 def extract_black_pixels(image_array):
@@ -27,7 +25,7 @@ def calculate_baseline(image_array, top_edge):
     top_row_black_pixels = np.where(image_array[top_edge, :] == 0)[0]
     baseline_start = top_row_black_pixels.min() + 1
     baseline_end = top_row_black_pixels.max() + 1
-    return baseline_start, baseline_end, 
+    return baseline_start, baseline_end
 
 
 def calculate_side_bearings(left_edge, right_edge, baseline_start, baseline_end):
@@ -67,27 +65,24 @@ def visualize_glyph_metrics(image, metrics, output_path):
 
     fig, ax = plt.subplots()
     ax.imshow(image_array, cmap='gray')
-    # baseline
-    ax.axhline(y=metrics['top_edge'], color='red', linestyle='--', label='baseline')
 
-    # left edge and right edge lines
-    ax.axvline(x=metrics['left_edge'], color='blue', linestyle='--', label='left edge')
-    ax.axvline(x=metrics['right_edge'], color='green', linestyle='--', label='right edge')
-
-    # baseline start and end
-    ax.axvline(x=metrics['baseline_start'], color='orange', linestyle='--', label='baseline starts')
-    ax.axvline(x=metrics['baseline_end'], color='purple', linestyle='--', label='baseline ends')
-
+    ax.axhline(y=metrics['top_edge'], color='red', linestyle='--', label='Baseline')
+    ax.axvline(x=metrics['left_edge'], color='blue', linestyle='--', label='Left Edge')
+    ax.axvline(x=metrics['right_edge'], color='green', linestyle='--', label='Right Edge')
+    ax.axvline(x=metrics['baseline_start'], color='orange', linestyle='--', label='Baseline Start')
+    ax.axvline(x=metrics['baseline_end'], color='purple', linestyle='--', label='Baseline End')
     ax.legend()
-    plt.title(f"metric visualization: {os.path.basename(output_path)}")
+    plt.title(f"Glyph Metrics: {os.path.basename(output_path)}")
     plt.savefig(output_path)
     plt.close()
 
 
 def save_glyph_metrics_to_csv_and_visualize(directory, output_csv, output_visual_dir):
+    os.makedirs(output_visual_dir, exist_ok=True)
+
     with open(output_csv, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Image Name", "Baseline", "Width", "LSB", "RSB"])
+        writer.writerow(["image name", "baseline", "width", "lsb", "rsb"])
 
         for filename in os.listdir(directory):
             if filename.endswith(".png"):
@@ -109,12 +104,11 @@ def save_glyph_metrics_to_csv_and_visualize(directory, output_csv, output_visual
 
 
 def main():
-    directory_path = '../../data/glyph_images'
+    glyph_dir_path = '../../data/glyph_images'
     output_csv = '../../data/glyph_metrics_csv/glyph_metrics.csv'
     output_visual_dir = '../../data/glyph_visualizations'
-    
-    os.makedirs(output_visual_dir, exist_ok=True)
-    save_glyph_metrics_to_csv_and_visualize(directory_path, output_csv, output_visual_dir)
+
+    save_glyph_metrics_to_csv_and_visualize(glyph_dir_path, output_csv, output_visual_dir)
 
 
 if __name__ == "__main__":
