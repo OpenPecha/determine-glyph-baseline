@@ -68,20 +68,19 @@ def visualize_glyph_metrics(image, metrics, output_path):
 
     fig, ax = plt.subplots()
     ax.imshow(image_array, cmap='gray')
-
-    # Plot top edge line
+    # baseline
     ax.axhline(y=metrics['top_edge'], color='red', linestyle='--', label='baseline')
 
-    # Plot left edge and right edge lines
+    # left edge and right edge lines
     ax.axvline(x=metrics['left_edge'], color='blue', linestyle='--', label='left edge')
     ax.axvline(x=metrics['right_edge'], color='green', linestyle='--', label='right edge')
 
-    # Plot baseline start and end
+    # baseline start and end
     ax.axvline(x=metrics['top_edge_start'], color='orange', linestyle='--', label='baseline starts')
     ax.axvline(x=metrics['top_edge_end'], color='purple', linestyle='--', label='baseline ends')
 
     ax.legend()
-    plt.title(f"Glyph Visualization: {os.path.basename(output_path)}")
+    plt.title(f"metric visualization: {os.path.basename(output_path)}")
     plt.savefig(output_path)
     plt.close()
 
@@ -105,9 +104,6 @@ def save_glyph_metrics_to_csv_and_visualize(directory, output_csv, output_visual
                         metrics['lsb'],
                         metrics['rsb']
                     ])
-                    print(f"Processed: {filename}")
-
-                    # Visualize and save the glyph metrics
                     output_visual_path = os.path.join(
                         output_visual_dir, f"{os.path.splitext(filename)[0]}_visualization.png")
                     visualize_glyph_metrics(image, metrics, output_visual_path)
@@ -117,10 +113,8 @@ def main():
     directory_path = '../../data/glyph_images'
     output_csv = '../../data/glyph_metrics_csv/glyph_metrics.csv'
     output_visual_dir = '../../data/glyph_visualizations'
-
-    # Ensure the output directory exists
+    
     os.makedirs(output_visual_dir, exist_ok=True)
-
     save_glyph_metrics_to_csv_and_visualize(directory_path, output_csv, output_visual_dir)
 
 
